@@ -24,8 +24,8 @@ function App1() {
    <ClickCounter />
     </ErrorBoundry>
    
-  
-   </>
+        
+        </>
    
   )
 }
