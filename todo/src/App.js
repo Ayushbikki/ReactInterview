@@ -4,21 +4,47 @@ import {useState} from 'react'
 import TodoList from './components/TodoList';
 
 function App() {
-  const [inputList,setInputList] = useState('')
-      const [todo,setTodo]= useState([])
+  //const [inputList,setInputList] = useState('')
+      const [todo,setTodo]= useState('')
+      const [todos,setTodos]= useState([])
+      const [editId,setEditId]= useState(0)
 
-      const itemEvent =(e)=>{
-        setInputList(e.target.value)
+      
+      
+      
+      const handleSubmit =(e)=>{
+        e.preventDefault()
+
+        if(editId){
+          const editTodo=todos.find((i)=>i.id===editId)
+          const updatedTodos= todos.map((t)=>
+            t.id===editTodo.id
+            ?(t={id:t.id,todo})
+            :t={id:t.id,todo: t.todo}
+            );
+            setTodos(updatedTodos)
+            setEditId(0)
+            setTodo('')
+            return;
+
+        }
+        if(todo!==''){
+          setTodos([{id: `${todo}-${Date.now()}`,todo},...todos])
+          setTodo('')
+        
+        }
 
       }
-      const listOfTodo =() =>{
-        setTodo((oldTodo) =>{
-            return [...oldTodo,inputList]
-        })
-        setInputList("")
-      }
-      console.log(todo)
-      console.log('in',inputList)
+    const handleDelete =(id)=>{
+      const deleTodo = todos.filter((to)=>to.id!==id)
+      setTodos([...deleTodo])
+    }
+    const handleEdit =(id)=>{
+
+        const editTodo= todos.find((i)=>i.id===id)
+        setTodo(editTodo.todo)
+        setEditId(id)
+    }
   return (
     <div className="App">
       <div className='container'>
@@ -26,19 +52,22 @@ function App() {
        {/* <input type='text' placeholder='add a todo' value={inputList} onChange={itemEvent}></input>
        <button onClick={listOfTodo}>Submit</button>
         <TodoList does={todo} /> */}
-        <form className='todoForm'>
-          <input type="text"></input>
-          <button>Go</button>
+        <form className='todoForm' onSubmit={handleSubmit}>
+          <input type="text" value={todo} onChange={(e)=>setTodo(e.target.value)}></input>
+          <button type='submit'>{editId? "Edit": "Go"}</button>
         </form>
-        <ul>
-          <li>
-            <span>Learn React</span>
-            <button>Edit</button>
-            <button>Delete</button>
+        <ul className='allTodos'>
+          {
+            todos.map((t)=> (
+              <li className='singleTodo'>
+            <span className='todoText' key={t.id}>{t.todo}</span>
+            <button onClick={()=> handleEdit(t.id)}>Edit</button>
+            <button onClick={()=> handleDelete(t.id)}>Delete</button>
           </li>
-          <span>Learn JavaScript</span>
-            <button>Edit</button>
-            <button>Delete</button>
+
+            ))
+          }
+          
         </ul>
         </div>
     </div>
